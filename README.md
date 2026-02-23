@@ -23,7 +23,7 @@ cd src/main/java/com/igerixx/Streaming-StAX-like-parser
 ```
 Build the project, make sure you have Java and Maven installed.
 ```bash
-mvn clean package
+mvn clean install
 ```
 After the build completes successfully, the `.jar` file will be located in:
 ```code
