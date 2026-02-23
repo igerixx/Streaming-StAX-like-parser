@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Root level comment -->
+
+<main version="1.0" author="igerixx &amp; Co">
+
+    <!-- Mixed content example -->
+    <section id="intro">
+        Hello <b>world</b> !!!
+    </section>
+
+    <!-- Self-closing tags -->
+    <items>
+        <item id="1"/>
+        <item id="2"/>
+        <item id="3"/>
+    </items>
+
+    <!-- CDATA example -->
+    <script>
+        <![CDATA[
+            if (a < b && c > d) {
+                System.out.println("Raw XML-like content");
+            }
+        ]]>
+    </script>
+
+    <!-- Entities inside text -->
+    <escaped>
+        &lt;tag&gt; &amp; &quot;quotes&quot;
+    </escaped>
+
+    <!-- Entities inside attribute -->
+    <data value="1 &lt; 2 &amp;&amp; 3 &gt; 2"/>
+
+    <!-- UTF-8 example -->
+    <unicode>
+        Привіт світ 🌍
+    </unicode>
+
+    <!-- Deep nesting -->
+    <nested>
+        <level1>
+            <level2>
+                <level3>
+                    Deep text
+                </level3>
+            </level2>
+        </level1>
+    </nested>
+
+    <!-- Text between self-closing tags -->
+    <mixed>
+        text1<a/>text2<b/>text3
+    </mixed>
+
+    <!-- Empty element -->
+    <empty></empty>
+
+</main>
