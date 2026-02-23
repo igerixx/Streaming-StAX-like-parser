@@ -19,7 +19,7 @@ A StAX-like parser is a streaming parser inspired by the StAX (Streaming API for
 Clone repository
 ```bash
 git clone https://github.com/igerixx/Streaming-StAX-like-parser.git
-cd src/main/java/com/igerixx/Streaming-StAX-like-parser
+cd Streaming-StAX-like-parser
 ```
 Build the project, make sure you have Java and Maven installed.
 ```bash
