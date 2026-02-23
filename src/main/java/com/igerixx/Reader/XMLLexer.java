@@ -56,6 +56,7 @@ public class XMLLexer {
 
             // --- Return open tag, end tag, comment, doctype, cdata and content ---
             if (state == XMLLexerConstants.OUT) {
+                checkForRefill();
                 // --- Open tag processing instruction ---
                 if (character == '<' && charBuffer[pos] == '?') {
                     state = XMLLexerConstants.TAG;
@@ -76,6 +77,7 @@ public class XMLLexer {
                     pos+=2;
 
                     while (character != '>') {
+                        checkForRefill();
                         charString[charIndex++] = character;
                         character = charBuffer[pos++];
                     }
