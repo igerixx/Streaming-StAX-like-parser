@@ -29,6 +29,14 @@ After the build completes successfully, the `.jar` file will be located in:
 ```code
 target/
 ```
+To use it with Maven add dependency
+```xml
+<dependency>
+    <groupId>com.igerixx.Reader</groupId>
+    <artifactId>streaming-xml-parser</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ## Usage
 Initialization
