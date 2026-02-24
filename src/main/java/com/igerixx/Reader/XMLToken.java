@@ -38,6 +38,18 @@ public class XMLToken {
         this.type = type;
     }
 
+    public void setStringBuffer(byte[] stringBuffer) {
+        this.stringBuffer = stringBuffer;
+    }
+
+    public void setCharStringBuffer(char[] charStringBuffer) {
+        this.charStringBuffer = charStringBuffer;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
     public String getValue() {
         if (stringBuffer != null)
             return new String(stringBuffer, 0, length, StandardCharsets.UTF_8);

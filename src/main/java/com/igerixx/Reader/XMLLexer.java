@@ -20,6 +20,7 @@ public class XMLLexer {
     private boolean trim = true;
     private boolean isStringBufferFull = false;
     private boolean isLastAttribute = true;
+    private XMLToken token = new XMLToken();
 
     public XMLLexer(InputStream is) throws IOException {
         isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -45,11 +46,16 @@ public class XMLLexer {
             pos = 0;
             refill();
         }
-        else if (readByte == -1)
-            return new XMLToken(XMLTokenConstants.END_OF_FILE, new byte[]{'n', 'u', 'l', 'l'}, 4);
+        else if (readByte == -1) {
+            token.setType(XMLTokenConstants.END_OF_FILE);
+            token.setStringBuffer(new byte[]{'n', 'u', 'l', 'l'});
+            token.setCharStringBuffer(null);
+            token.setLength(4);
+            return token;
+        }
 
         while (pos < readByte) {
-            // charBuffer[pos-1] = last char
+            // charBuffer[pos-2] = last char
             // character =         char at the moment
             // charBuffer[pos] =   next char
             char character = charBuffer[pos++];
@@ -61,7 +67,12 @@ public class XMLLexer {
                 if (character == '<' && charBuffer[pos] == '?') {
                     state = XMLLexerConstants.TAG;
                     pos++;
-                    return new XMLToken(XMLTokenConstants.PROCESSING_INSTRUCTION_OPEN, new byte[]{'<', '?'}, 2);
+
+                    token.setType(XMLTokenConstants.PROCESSING_INSTRUCTION_OPEN);
+                    token.setStringBuffer(new byte[]{'<', '?'});
+                    token.setCharStringBuffer(null);
+                    token.setLength(2);
+                    return token;
                 }
 
                 // Clear byteString
@@ -82,7 +93,11 @@ public class XMLLexer {
                         character = charBuffer[pos++];
                     }
 
-                    return new XMLToken(XMLTokenConstants.END_TAG, charString, charIndex);
+                    token.setType(XMLTokenConstants.END_TAG);
+                    token.setStringBuffer(null);
+                    token.setCharStringBuffer(charString);
+                    token.setLength(charIndex);
+                    return token;
                 }
 
                 // --- Comment, doctype and CData ---
@@ -102,7 +117,12 @@ public class XMLLexer {
                         }
 
                         lastCharIndex = charIndex;
-                        return new XMLToken(XMLTokenConstants.DOCTYPE, charString, charIndex);
+
+                        token.setType(XMLTokenConstants.DOCTYPE);
+                        token.setStringBuffer(null);
+                        token.setCharStringBuffer(charString);
+                        token.setLength(charIndex);
+                        return token;
                     }
 
                     // --- Comment ---
@@ -137,7 +157,12 @@ public class XMLLexer {
 
                         pos += 3;
                         lastCharIndex = charIndex;
-                        return new XMLToken(XMLTokenConstants.COMMENT, charString, charIndex);
+
+                        token.setType(XMLTokenConstants.COMMENT);
+                        token.setStringBuffer(null);
+                        token.setCharStringBuffer(charString);
+                        token.setLength(charIndex);
+                        return token;
                     }
 
                     // --- CData ---
@@ -170,16 +195,30 @@ public class XMLLexer {
 
                         lastCharIndex = charIndex;
                         pos += 3;
-                        return new XMLToken(XMLTokenConstants.CDATA, charString, charIndex);
+
+                        token.setType(XMLTokenConstants.CDATA);
+                        token.setStringBuffer(null);
+                        token.setCharStringBuffer(charString);
+                        token.setLength(charIndex);
+                        return token;
                     }
 
-                    return new XMLToken(XMLTokenConstants.PROCESSING_INSTRUCTION_OPEN, new byte[]{'<', '!'}, 2);
+                    token.setType(XMLTokenConstants.PROCESSING_INSTRUCTION_OPEN);
+                    token.setStringBuffer(new byte[]{'<', '!'});
+                    token.setCharStringBuffer(null);
+                    token.setLength(2);
+                    return token;
                 }
 
                 // --- Open tag ---
                 if (character == '<') {
                     state = XMLLexerConstants.TAG;
-                    return new XMLToken(XMLTokenConstants.TAG_OPEN, new byte[]{'<'}, 1);
+
+                    token.setType(XMLTokenConstants.TAG_OPEN);
+                    token.setStringBuffer(new byte[]{'<'});
+                    token.setCharStringBuffer(null);
+                    token.setLength(1);
+                    return token;
                 }
 
                 // After END_TAG state is OUT, so this block needs to add text after it
@@ -199,7 +238,11 @@ public class XMLLexer {
             if (state == XMLLexerConstants.TAG) {
                 // --- Equal ---
                 if (character == '=') {
-                    return new XMLToken(XMLTokenConstants.EQUAL, new byte[]{'='}, 1);
+                    token.setType(XMLTokenConstants.EQUAL);
+                    token.setStringBuffer(new byte[]{'='});
+                    token.setCharStringBuffer(null);
+                    token.setLength(1);
+                    return token;
                 }
 
                 // --- Close tag of normal, self closed and processing instruction tags ---
@@ -207,16 +250,29 @@ public class XMLLexer {
                     // --- Normal ---
                     if (character == '>') {
                         state = XMLLexerConstants.CONTENT;
-                        return new XMLToken(XMLTokenConstants.TAG_CLOSE, new byte[]{'>'}, 1);
+
+                        token.setType(XMLTokenConstants.TAG_CLOSE);
+                        token.setStringBuffer(new byte[]{'>'});
+                        token.setCharStringBuffer(null);
+                        token.setLength(1);
+                        return token;
                     }
                     state = XMLLexerConstants.OUT;
                     pos++;
                     // --- Self closed ---
                     if (character == '/') {
-                        return new XMLToken(XMLTokenConstants.TAG_CLOSE, new byte[]{'/', '>'}, 2);
+                        token.setType(XMLTokenConstants.TAG_CLOSE);
+                        token.setStringBuffer(new byte[]{'/', '>'});
+                        token.setCharStringBuffer(null);
+                        token.setLength(2);
+                        return token;
                     }
                     // --- Processing instruction ---
-                    return new XMLToken(XMLTokenConstants.PROCESSING_INSTRUCTION_CLOSE, new byte[]{'?', '>'}, 2);
+                    token.setType(XMLTokenConstants.PROCESSING_INSTRUCTION_CLOSE);
+                    token.setStringBuffer(new byte[]{'?', '>'});
+                    token.setCharStringBuffer(null);
+                    token.setLength(2);
+                    return token;
                 }
 
                 // --- End tag ---
@@ -230,7 +286,12 @@ public class XMLLexer {
                     charString[charIndex++] = character;
 
                     state = XMLLexerConstants.OUT;
-                    return new XMLToken(XMLTokenConstants.END_TAG, charString, charIndex);
+
+                    token.setType(XMLTokenConstants.END_TAG);
+                    token.setStringBuffer(null);
+                    token.setCharStringBuffer(charString);
+                    token.setLength(charIndex);
+                    return token;
                 }
 
                 // 32 - whitespace
@@ -248,7 +309,12 @@ public class XMLLexer {
                     }
 
                     pos--;
-                    return new XMLToken(XMLTokenConstants.NAME, charString, charIndex);
+
+                    token.setType(XMLTokenConstants.NAME);
+                    token.setStringBuffer(null);
+                    token.setCharStringBuffer(charString);
+                    token.setLength(charIndex);
+                    return token;
                 }
 
                 // --- Attribute name and close tag ---
@@ -262,10 +328,19 @@ public class XMLLexer {
                             state = XMLLexerConstants.OUT;
                             if (character == '/') {
                                 pos++;
-                                return new XMLToken(XMLTokenConstants.TAG_CLOSE, new byte[]{'/', '>'}, 2);
+
+                                token.setType(XMLTokenConstants.TAG_CLOSE);
+                                token.setStringBuffer(new byte[]{'/', '>'});
+                                token.setCharStringBuffer(null);
+                                token.setLength(2);
+                                return token;
                             }
 
-                            return new XMLToken(XMLTokenConstants.TAG_CLOSE, new char[]{character}, 1);
+                            token.setType(XMLTokenConstants.TAG_CLOSE);
+                            token.setStringBuffer(null);
+                            token.setCharStringBuffer(new char[]{character});
+                            token.setLength(1);
+                            return token;
                         }
                     }
 
@@ -278,7 +353,11 @@ public class XMLLexer {
                         }
                     }
 
-                    return new XMLToken(XMLTokenConstants.ATTR_NAME, charString, charIndex);
+                    token.setType(XMLTokenConstants.ATTR_NAME);
+                    token.setStringBuffer(null);
+                    token.setCharStringBuffer(charString);
+                    token.setLength(charIndex);
+                    return token;
                 }
 
                 // --- Attribute value ---
@@ -304,7 +383,11 @@ public class XMLLexer {
                         pos--;
                     }
 
-                    return new XMLToken(XMLTokenConstants.ATTR_VALUE, charString, charIndex);
+                    token.setType(XMLTokenConstants.ATTR_VALUE);
+                    token.setStringBuffer(null);
+                    token.setCharStringBuffer(charString);
+                    token.setLength(charIndex);
+                    return token;
                 }
             }
 
@@ -326,12 +409,22 @@ public class XMLLexer {
                             if (charBuffer[pos] == '<' && (charBuffer[pos+1] != '!' && charBuffer[pos+1] != '/')) {
                                 pos++;
                                 state = XMLLexerConstants.TAG;
-                                return new XMLToken(XMLTokenConstants.TAG_OPEN, new byte[]{'<'}, 1);
+
+                                token.setType(XMLTokenConstants.TAG_OPEN);
+                                token.setStringBuffer(new byte[]{'<'});
+                                token.setCharStringBuffer(null);
+                                token.setLength(1);
+                                return token;
                             }
                             // Check for <! keyword
                             else if (charBuffer[pos] == '<') {
                                 state = XMLLexerConstants.OUT;
-                                return new XMLToken(XMLTokenConstants.TAG_OPEN, new char[]{'<', charBuffer[pos]}, 2);
+
+                                token.setType(XMLTokenConstants.TAG_OPEN);
+                                token.setStringBuffer(null);
+                                token.setCharStringBuffer(new char[]{'<', charBuffer[pos]});
+                                token.setLength(2);
+                                return token;
                             }
                             character = charBuffer[pos++];
                         }
@@ -375,7 +468,11 @@ public class XMLLexer {
                     if (!isStringBufferFull)
                         state = XMLLexerConstants.OUT;
 
-                    return new XMLToken(XMLTokenConstants.CONTENT, charString, lastCharIndex);
+                    token.setType(XMLTokenConstants.CONTENT);
+                    token.setStringBuffer(null);
+                    token.setCharStringBuffer(charString);
+                    token.setLength(lastCharIndex);
+                    return token;
                 } else {
                     state = XMLLexerConstants.TAG;
                     if (charBuffer[pos] == '/' || charBuffer[pos] == '!') {
@@ -384,12 +481,20 @@ public class XMLLexer {
                         if (charBuffer[pos] == '!') continue;
                     }
 
-                    return new XMLToken(XMLTokenConstants.TAG_OPEN, new byte[]{'<'}, 1);
+                    token.setType(XMLTokenConstants.TAG_OPEN);
+                    token.setStringBuffer(new byte[]{'<'});
+                    token.setCharStringBuffer(null);
+                    token.setLength(1);
+                    return token;
                 }
             }
         }
 
-        return new XMLToken(XMLTokenConstants.END_OF_FILE, new byte[]{'n', 'u', 'l', 'l'}, 4);
+        token.setType(XMLTokenConstants.END_OF_FILE);
+        token.setStringBuffer(new byte[]{'n', 'u', 'l', 'l'});
+        token.setCharStringBuffer(null);
+        token.setLength(4);
+        return token;
     }
 
     private char entityChange(char[] buf, int pos) {
