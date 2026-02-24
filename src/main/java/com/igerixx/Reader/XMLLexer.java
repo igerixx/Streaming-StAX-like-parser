@@ -55,6 +55,7 @@ public class XMLLexer {
         }
 
         while (pos < readByte) {
+            checkForRefill();
             // charBuffer[pos-2] = last char
             // character =         char at the moment
             // charBuffer[pos] =   next char
@@ -89,6 +90,7 @@ public class XMLLexer {
 
                     while (character != '>') {
                         checkForRefill();
+
                         charString[charIndex++] = character;
                         character = charBuffer[pos++];
                     }
@@ -112,6 +114,8 @@ public class XMLLexer {
                         character = charBuffer[pos++];
 
                         while (character != '>') {
+                            checkForRefill();
+
                             charString[charIndex++] = character;
                             character = charBuffer[pos++];
                         }
@@ -141,6 +145,8 @@ public class XMLLexer {
 
                         // Add characters until next characters is -->
                         while (true) {
+                            checkForRefill();
+
                             if (charBuffer[pos] == '-' && charBuffer[pos+1] == '-' && charBuffer[pos+2] == '>') break;
 
                             charString[charIndex++] = character;
@@ -179,6 +185,7 @@ public class XMLLexer {
 
                         // Add characters until next characters is ]]>
                         while (true) {
+                            checkForRefill();
                             if (charBuffer[pos] == ']' && charBuffer[pos+1] == ']' && charBuffer[pos+2] == '>') break;
 
                             charString[charIndex++] = character;
@@ -280,6 +287,8 @@ public class XMLLexer {
                     int charIndex = 0;
 
                     while (character != '>') {
+                        checkForRefill();
+
                         charString[charIndex++] = character;
                         character = charBuffer[pos++];
                     }
@@ -300,6 +309,8 @@ public class XMLLexer {
                     int charIndex = 0;
 
                     while (character != ' ' && character != '>') {
+                        checkForRefill();
+
                         charString[charIndex++] = character;
                         character = charBuffer[pos++];
 
@@ -323,6 +334,8 @@ public class XMLLexer {
 
                     // 47 - '/'
                     while (character < 47) {
+                        checkForRefill();
+
                         character = charBuffer[pos++];
                         if (character == '/' || character == '>') {
                             state = XMLLexerConstants.OUT;
@@ -345,6 +358,8 @@ public class XMLLexer {
                     }
 
                     while (character != '=') {
+                        checkForRefill();
+
                         charString[charIndex++] = character;
                         character = charBuffer[pos++];
 
@@ -366,13 +381,14 @@ public class XMLLexer {
                     character = charBuffer[pos++];
 
                     while (character != '"' && character != '\'') {
+                        checkForRefill();
+
                         // Entity check
                         if (character == '&')
                             charString[charIndex++] = entityChange(charBuffer, pos);
                         else
                             charString[charIndex++] = character;
 
-                        checkForRefill();
                         character = charBuffer[pos++];
                     }
 
