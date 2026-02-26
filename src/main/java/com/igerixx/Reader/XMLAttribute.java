@@ -6,6 +6,11 @@ public class XMLAttribute {
 
     public XMLAttribute() {}
 
+    public XMLAttribute(String attributeName, String attributeValue) {
+        this.attributeName = attributeName;
+        this.attributeValue = attributeValue;
+    }
+
     public String getAttributeName() {
         return attributeName;
     }

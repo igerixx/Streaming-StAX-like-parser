@@ -1,17 +1,20 @@
 package com.igerixx.Reader;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class XMLReader {
     private XMLLexer lexer;
     private XMLToken token, lastToken;
     private String tagName = "";
-    private final List<XMLAttribute> attributes = new ArrayList<>();
+    private final Map<String, String> attributes = new HashMap<>();
     private XMLAttribute attribute = new XMLAttribute();
     private String text = "";
     private String lastTag = "";
@@ -38,16 +41,20 @@ public class XMLReader {
         return !attributes.isEmpty();
     }
 
-    public List<XMLAttribute> getAttributes() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 
-    public String getAttributeLocalName(int index) {
-        return attributes.get(index).getAttributeName();
+    public List<XMLAttribute> getAttributesList() {
+        List<XMLAttribute> list = new ArrayList<>();
+        attributes.forEach((k, v) -> {
+            list.add(new XMLAttribute(k, v));
+        });
+        return list;
     }
 
-    public String getAttributeValue(int index) {
-        return attributes.get(index).getAttributeValue();
+    public String getAttributeValue(String attributeName) {
+        return attributes.get(attributeName);
     }
 
     public String getText() {
@@ -98,7 +105,7 @@ public class XMLReader {
                     case XMLTokenConstants.ATTR_NAME -> attribute.setAttributeName(token.getValue());
                     case XMLTokenConstants.ATTR_VALUE -> {
                         attribute.setAttributeValue(token.getValue());
-                        attributes.add(attribute);
+                        attributes.put(attribute.getAttributeName(), attribute.getAttributeValue());
                         attribute = new XMLAttribute();
                     }
                     case XMLTokenConstants.TAG_CLOSE -> {
