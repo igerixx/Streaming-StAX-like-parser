@@ -36,7 +36,7 @@ public class Example {
 
                 if (event == XMLReaderConstants.START_ELEMENT
                         && reader.getLocalName().equals(tagName)) {
-                    return reader.getAttributes();
+                    return reader.getAttributesList();
                 }
             }
 
