@@ -56,6 +56,7 @@ public class XMLLexer {
 
         while (pos < readByte) {
             checkForRefill();
+            if (pos == -1) break;
             // charBuffer[pos-2] = last char
             // character =         char at the moment
             // charBuffer[pos] =   next char
@@ -381,7 +382,7 @@ public class XMLLexer {
                     character = charBuffer[pos++];
 
                     while (character != '"' && character != '\'') {
-                        checkForRefill();
+                        checkForRefill(pos+1);
 
                         // Entity check
                         if (character == '&')
@@ -392,6 +393,7 @@ public class XMLLexer {
                         character = charBuffer[pos++];
                     }
 
+                    checkForRefill();
                     isLastAttribute = !(charBuffer[pos] >= 65 || charBuffer[pos] == ' ');
                     if (charBuffer[pos] == ' ') {
                         while (charBuffer[pos++] <= 32) {}
@@ -420,7 +422,7 @@ public class XMLLexer {
                         // 32 - whitespace
                         // Remove spaces and special symbols before string
                         while (character <= 32) {
-                            checkForRefill();
+                            checkForRefill(pos+1);
                             // --- Tag open ---
                             if (charBuffer[pos] == '<' && (charBuffer[pos+1] != '!' && charBuffer[pos+1] != '/')) {
                                 pos++;
@@ -438,7 +440,7 @@ public class XMLLexer {
 
                                 token.setType(XMLTokenConstants.TAG_OPEN);
                                 token.setStringBuffer(null);
-                                token.setCharStringBuffer(new char[]{'<', charBuffer[pos]});
+                                token.setCharStringBuffer(new char[]{'<', charBuffer[pos+1]});
                                 token.setLength(2);
                                 return token;
                             }
@@ -461,6 +463,7 @@ public class XMLLexer {
                         }
 
                         if (character >= 32) {
+                            checkForRefill(pos+1);
                             // Entity check
                             if (character == '&')
                                 charString[charIndex++] = entityChange(charBuffer, pos);
@@ -513,7 +516,7 @@ public class XMLLexer {
         return token;
     }
 
-    private char entityChange(char[] buf, int pos) {
+    private char entityChange(char[] buf, int pos) throws IOException {
         // &amp;
         if (buf[pos] == 'a' && buf[pos+1] == 'm' && buf[pos+2] == 'p') {
             this.pos += 4;
