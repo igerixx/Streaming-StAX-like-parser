@@ -56,7 +56,7 @@ public class XMLLexer {
 
         while (pos < readByte) {
             checkForRefill();
-            if (pos == -1) break;
+            if (pos == -1) pos = 0;
             // charBuffer[pos-2] = last char
             // character =         char at the moment
             // charBuffer[pos] =   next char
@@ -471,6 +471,7 @@ public class XMLLexer {
                                 charString[charIndex++] = character;
                         }
 
+                        checkForRefill(pos+1);
                         character = charBuffer[pos++];
                     }
 
@@ -548,7 +549,7 @@ public class XMLLexer {
             pos++;
             int codeSize = 0;
 
-            while (buf[pos++] != ';') codeSize++;
+            while (buf.length > pos+1 && buf[pos++] != ';') codeSize++;
 
             switch (codeSize) {
                 case 3 -> {
