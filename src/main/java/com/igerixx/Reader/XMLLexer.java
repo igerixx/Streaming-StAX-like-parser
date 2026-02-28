@@ -46,6 +46,7 @@ public class XMLLexer {
             pos = 0;
             refill();
         }
+
         else if (readByte == -1) {
             token.setType(XMLTokenConstants.END_OF_FILE);
             token.setStringBuffer(new byte[]{'n', 'u', 'l', 'l'});
