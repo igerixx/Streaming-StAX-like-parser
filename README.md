@@ -106,7 +106,7 @@ while (reader.hasNext()) {
     if (event == XMLReaderConstants.START_ELEMENT
             && reader.getLocalName().equals(tagName) 
             && reader.hasAttributes()) {
-        attributeValue = reader.getAttributeValue(attributeName)
+        attributeValue = reader.getAttributeValue(attributeName);
         break;
     }
 }
