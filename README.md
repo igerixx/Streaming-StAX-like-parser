@@ -83,13 +83,30 @@ while (reader.hasNext()) {
 
 Get tag attributes
 ```java
-List<XMLAttribute> attrs;
+List<XMLAttribute> attrsList;
+Map<String, String> attrsMap;
 String tagName = "tag";
 while (reader.hasNext()) {
     int event = reader.next();
     if (event == XMLReaderConstants.START_ELEMENT
-            && reader.getLocalName().equals(tagName)) {
-        attrs = reader.getAttributes();
+            && reader.getLocalName().equals(tagName) 
+            && reader.hasAttributes()) {
+        attrsList = reader.getAttributesList();
+        attrsMap = reader.getAttributes();
+        break;
+    }
+}
+```
+```java
+String attributeName = "attribute";
+String attributeValue;
+String tagName = "tag";
+while (reader.hasNext()) {
+    int event = reader.next();
+    if (event == XMLReaderConstants.START_ELEMENT
+            && reader.getLocalName().equals(tagName) 
+            && reader.hasAttributes()) {
+        attributeValue = reader.getAttributeValue(attributeName)
         break;
     }
 }
