@@ -449,7 +449,7 @@ public class XMLLexer {
                         }
                     }
 
-                    checkForRefill();
+                    checkForRefill(pos+1);
                     // Skip if there's <!
                     if (charBuffer[pos] == '<' && charBuffer[pos+1] == '!') continue;
 
@@ -496,6 +496,7 @@ public class XMLLexer {
                     return token;
                 } else {
                     state = XMLLexerConstants.TAG;
+                    checkForRefill();
                     if (charBuffer[pos] == '/' || charBuffer[pos] == '!') {
                         pos--;
                         state = XMLLexerConstants.OUT;
