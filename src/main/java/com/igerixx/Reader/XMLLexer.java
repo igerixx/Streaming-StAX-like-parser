@@ -464,15 +464,17 @@ public class XMLLexer {
                         }
 
                         if (character >= 32) {
-                            checkForRefill(pos+1);
                             // Entity check
-                            if (character == '&')
+                            if (character == '&') {
+                                checkForRefill(pos+1);
                                 charString[charIndex++] = entityChange(charBuffer, pos);
-                            else
+                            }
+                            else {
                                 charString[charIndex++] = character;
+                            }
                         }
 
-                        checkForRefill(pos+1);
+                        checkForRefill();
                         character = charBuffer[pos++];
                     }
 
