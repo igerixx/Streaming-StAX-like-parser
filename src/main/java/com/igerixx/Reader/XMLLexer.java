@@ -397,7 +397,9 @@ public class XMLLexer {
                     checkForRefill();
                     isLastAttribute = !(charBuffer[pos] >= 65 || charBuffer[pos] == ' ');
                     if (charBuffer[pos] == ' ') {
+                        checkForRefill(pos+1);
                         while (charBuffer[pos++] <= 32) {}
+                        checkForRefill();
                         isLastAttribute = !(charBuffer[pos] >= 65);
                         pos--;
                     }
